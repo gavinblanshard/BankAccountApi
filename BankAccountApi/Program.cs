@@ -1,3 +1,6 @@
+using BankAccountApi.Data;
+using BankAccountApi.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankAccountApi
 {
@@ -10,9 +13,17 @@ namespace BankAccountApi
             // Add services to the container.
 
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("AccountsDb"));
+
+            // Register the service to initialise the data
+            builder.Services.AddTransient<IDataInitialisationService, DataInitialisationService>();
+
+            builder.Services.AddScoped<IAccountsRepository, AccountsRepository>();
 
             var app = builder.Build();
 
@@ -26,7 +37,6 @@ namespace BankAccountApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
